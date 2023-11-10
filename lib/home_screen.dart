@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -11,6 +13,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final AudioPlayer audioPlayer = AudioPlayer();
+  Duration? duration;
+  Timer? timer;
+  @override
+  void initState() {
+    audioPlayer.setAsset('assets/music/Tame ImpalaBorderline.mp3').then(
+      (value) {
+        duration = value;
+        audioPlayer.play();
+        timer = Timer.periodic(
+          const Duration(milliseconds: 200),
+          (timer) {
+            setState(() {});
+          },
+        );
+        setState(() {});
+      },
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -118,26 +141,39 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Slider(
-                    inactiveColor: Colors.white12,
-                    activeColor: Colors.white,
-                    value: 0.5,
-                    onChanged: (value) {},
-                  ),
+                  if (duration != null)
+                    Slider(
+                      inactiveColor: Colors.white12,
+                      activeColor: Colors.white,
+                      max: duration!.inMilliseconds.toDouble(),
+                      value: audioPlayer.position.inMilliseconds.toDouble(),
+                      onChangeStart: (value) {
+                        audioPlayer.pause();
+                      },
+                      onChangeEnd: (value) {
+                        audioPlayer.play();
+                      },
+                      onChanged: (value) {
+                        audioPlayer.seek(Duration(milliseconds: value.toInt()));
+                      },
+                    ),
                   Padding(
                     padding: EdgeInsets.only(
                         left: size.width * 0.06, right: size.width * 0.06),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '8:29',
-                          style: TextStyle(color: Colors.white, fontSize: 12),
+                          audioPlayer.position.toMinutesSeconds(),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
                         ),
-                        Text(
-                          '12:32',
-                          style: TextStyle(color: Colors.white, fontSize: 12),
-                        ),
+                        if (duration != null)
+                          Text(
+                            duration!.toMinutesSeconds(),
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 12),
+                          ),
                       ],
                     ),
                   ),
@@ -152,10 +188,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (audioPlayer.playing) {
+                            audioPlayer.pause();
+                          } else {
+                            audioPlayer.play();
+                          }
+                        },
                         iconSize: 56,
-                        icon: const Icon(
-                          CupertinoIcons.play_circle_fill,
+                        icon: Icon(
+                          audioPlayer.playing
+                              ? CupertinoIcons.pause_circle_fill
+                              : CupertinoIcons.play_circle_fill,
                           color: Colors.white,
                         ),
                       ),
@@ -176,5 +220,33 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+}
+
+extension DurationExtensions on Duration {
+  /// Converts the duration into a readable string
+  /// 05:15
+  String toHoursMinutes() {
+    String twoDigitMinutes = _toTwoDigits(inMinutes.remainder(60));
+    return "${_toTwoDigits(inHours)}:$twoDigitMinutes";
+  }
+
+  /// Converts the duration into a readable string
+  /// 05:15:35
+  String toHoursMinutesSeconds() {
+    String twoDigitMinutes = _toTwoDigits(inMinutes.remainder(60));
+    String twoDigitSeconds = _toTwoDigits(inSeconds.remainder(60));
+    return "${_toTwoDigits(inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+  }
+
+  String toMinutesSeconds() {
+    String twoDigitMinutes = _toTwoDigits(inMinutes.remainder(60));
+    String twoDigitSeconds = _toTwoDigits(inSeconds.remainder(60));
+    return '$twoDigitMinutes:$twoDigitSeconds';
+  }
+
+  String _toTwoDigits(int n) {
+    if (n >= 10) return "$n";
+    return "0$n";
   }
 }
