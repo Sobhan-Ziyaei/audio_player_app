@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: size.height * 0.03),
                   Row(
@@ -82,8 +83,92 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   Expanded(
-                    child: Image.asset('assets/images/cover.jpg'),
-                  )
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: size.width * 0.03,
+                        vertical: size.height * 0.03,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.asset(
+                          'assets/images/cover.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: size.width * 0.06),
+                    child: const Text(
+                      'BorderLine',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.01),
+                  Padding(
+                    padding: EdgeInsets.only(left: size.width * 0.06),
+                    child: const Text(
+                      'The slow Rush',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Slider(
+                    inactiveColor: Colors.white12,
+                    activeColor: Colors.white,
+                    value: 0.5,
+                    onChanged: (value) {},
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: size.width * 0.06, right: size.width * 0.06),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '8:29',
+                          style: TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                        Text(
+                          '12:32',
+                          style: TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          CupertinoIcons.backward_fill,
+                          color: Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        iconSize: 56,
+                        icon: const Icon(
+                          CupertinoIcons.play_circle_fill,
+                          color: Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          CupertinoIcons.forward_fill,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: size.height * 0.05),
                 ],
               ),
             ),
